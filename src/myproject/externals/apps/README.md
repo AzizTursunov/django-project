@@ -1,0 +1,1 @@
+Mention what each app is for, what the used version or revision is, and where it is taken from.

@@ -1,0 +1,6 @@
+Django~=3.0.4
+djangorestframework
+gunicorn==20.0.4
+psycopg2-binary==2.8.6
+python-dotenv
+social-auth-app-django

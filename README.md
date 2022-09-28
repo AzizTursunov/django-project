@@ -1,1 +1,1 @@
-# django-project
+This is myproject work from Django 3 Web Development Cookbook

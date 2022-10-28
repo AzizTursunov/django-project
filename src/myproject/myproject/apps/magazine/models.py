@@ -18,3 +18,9 @@ class NewsArticle(models.Model):
         verbose_name=_('Theme'),
         max_length=20
     )
+
+    class Meta:
+        verbose_name = 'News article'
+
+    def __str__(self):
+        return str(self.title)

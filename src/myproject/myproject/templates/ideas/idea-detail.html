@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block meta_tags %}
+{{ block.super }}
+{{ object.get_meta_tags }}
+{% endblock %}
+
+{% block content %}
+{% if is_translated %}
+    <h2>
+        "{{ object.translated_title }}"
+    </h2>
+    <p>{{ object.translated_content }}</p>
+{% else %}
+    <h2>
+        "{{ object.title }}"
+    </h2>
+    <p>{{ object.content }}</p>
+    {% if languages %}
+        <p>{{ languages }}</p>
+    {% endif %}
+    {% if object.category %}
+        <p>Category: {{ object.category.title }}</p>
+        <p>Ideas without this category: {{ object.category.get_ideas_without_this_category }}</p>
+    {% endif %}
+    {% if object.author %}
+        <p>Author: {{ object.author.username }}</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

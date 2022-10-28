@@ -18,8 +18,24 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
+from myproject.apps.ideas.views import (
+    idea_detail_view,
+    idea_vs_translated_fields_view
+)
+
 
 urlpatterns = i18n_patterns(
     path('', TemplateView.as_view(template_name="index.html")),
     path('admin/', admin.site.urls),
+    path('ideas/<int:idea_id>/', idea_detail_view, name='idea-detail'),
+    path(
+        'translated-ideas/<int:idea_id>/',
+        idea_vs_translated_fields_view,
+        name='translated-idea-detail'
+    ),
 )
+# urlpatterns = [
+#     path('', TemplateView.as_view(template_name="index.html")),
+#     path('admin/', admin.site.urls),
+#     path('ideas/<int:idea_id>/', idea_detail_view, name='idea-detail')
+# ]

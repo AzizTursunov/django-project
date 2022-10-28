@@ -9,7 +9,7 @@ load_dotenv()
 
 
 def get_secret(setting):
-    """Get the secret variable or return explicit exception."""
+    '''Get the secret variable or return explicit exception.'''
     try:
         return os.environ[setting]
     except KeyError:
@@ -34,6 +34,7 @@ SECRET_KEY = get_secret('DJANGO_SECRET_KEY')  # '_q%bu9n%vbw8_*44ckpcn^*%&(zfivo
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+WEBSITE_URL = 'http://127.0.0.1:8000'
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -45,13 +46,20 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    # contributed apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myproject.apps.magazine.apps.MagazineAppConfig'
+    # third-party apps
+    # ...
+    # local apps
+    'myproject.apps.core.apps.CoreAppConfig',  # Apps with mixins first!
+    'myproject.apps.categories.apps.CategoriesConfig',
+    'myproject.apps.ideas.apps.IdeasAppConfig',
+    'myproject.apps.magazine.apps.MagazineAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -124,7 +132,27 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+# LANGUAGES = [
+#     ('bg', 'Bulgarian'), ('hr', 'Croatian'),
+#     ('cs', 'Czech'), ('da', 'Danish'),
+#     ('nl', 'Dutch'), ('en', 'English'),
+#     ('et', 'Estonian'), ('fi', 'Finnish'),
+#     ('fr', 'French'), ('de', 'German'),
+#     ('el', 'Greek'), ('hu', 'Hungarian'),
+#     ('ga', 'Irish'), ('it', 'Italian'),
+#     ('lv', 'Latvian'), ('lt', 'Lithuanian'),
+#     ('mt', 'Maltese'), ('pl', 'Polish'),
+#     ('pt', 'Portuguese'), ('ro', 'Romanian'),
+#     ('sk', 'Slovak'), ('sl', 'Slovene'),
+#     ('es', 'Spanish'), ('sv', 'Swedish'),
+#     ('kl', 'Klingonian')
+# ]
+
+LANGUAGES = [
+    ('en', 'English'), ('ru', 'Russian'),
+    ('fr', 'French'), ('de', 'German')
+]
 
 TIME_ZONE = 'UTC'
 

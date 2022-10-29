@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -16,6 +18,13 @@ from myproject.apps.core.model_field import (
     TranslatedField
 )
 
+RATING_CHOICES = (
+    (1, '★☆☆☆☆'),
+    (2, '★★☆☆☆'),
+    (3, '★★★☆☆'),
+    (4, '★★★★☆'),
+    (5, '★★★★★'),
+)
 
 FavoriteObjectBase = generic_relation(is_required=True)
 
@@ -123,6 +132,12 @@ class Comment(CommentObject, CommentOwner):
 
 
 class IdeaWithTranslatedFields(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        max_length=36
+    )
     title = models.CharField(
         _('Title'),
         max_length=200
@@ -139,19 +154,25 @@ class IdeaWithTranslatedFields(models.Model):
         related_name='authored_ideas'
     )
     # 12M relation can be deleted after adding M2M and steps with migrations
-    category = models.ForeignKey(
-        'categories.Category',
-        verbose_name=_('Category'),
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name='category_ideas'
-    )
+    # category = models.ForeignKey(
+    #     'categories.Category',
+    #     verbose_name=_('Category'),
+    #     on_delete=models.SET_NULL,
+    #     blank=True,
+    #     null=True,
+    #     related_name='category_ideas'
+    # )
     categories = models.ManyToManyField(
         'categories.Category',
         verbose_name=_('Categories'),
         blank=True,
         related_name='ideas'
+    )
+    raiting = models.PositiveSmallIntegerField(
+        _('Raiting'),
+        choices=RATING_CHOICES,
+        blank=True,
+        null=True
     )
     translated_title = TranslatedField('title')
     translated_content = TranslatedField('content')
@@ -197,12 +218,15 @@ class IdeaWithTranslatedFields(models.Model):
             title=self.title
         ).exists():
             raise ValidationError(
-                _("Each idea of some user should have a unique title.")
+                _('Each idea of some user should have a unique title.')
             )
         if not re.match(r'^\S.*\S$', self.title):
             raise ValidationError(
-                _("The title cannot start or end with a whitespace.")
+                _('The title cannot start or end with a whitespace.')
             )
+
+    def get_url_path(self):
+        return reverse('ideas:idea_detail', kwargs={'pk': self.pk})
 
 
 class IdeaTranslations(models.Model):

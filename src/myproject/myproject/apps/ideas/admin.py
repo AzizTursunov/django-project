@@ -59,6 +59,6 @@ class IdeaWithTranslatedFieldsAdmin(admin.ModelAdmin):
         ),
         (
             _('Auhor and Category'),
-            {'fields': ['author', 'category', 'categories']}
+            {'fields': ['author', 'categories']}
         )
     ]

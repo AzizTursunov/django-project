@@ -15,27 +15,37 @@ Including another URLconf
 """
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import include, path
 from django.views.generic import TemplateView
 
-from myproject.apps.ideas.views import (
-    idea_detail_view,
-    idea_vs_translated_fields_view
-)
-
+from myproject.apps.ideas.views import idea_detail_view
 
 urlpatterns = i18n_patterns(
     path('', TemplateView.as_view(template_name="index.html")),
     path('admin/', admin.site.urls),
     path('ideas/<int:idea_id>/', idea_detail_view, name='idea-detail'),
     path(
-        'translated-ideas/<int:idea_id>/',
-        idea_vs_translated_fields_view,
-        name='translated-idea-detail'
+        'translated-ideas/',
+        include(
+            'myproject.apps.ideas.urls',
+            namespace='ideas'
+        )
     ),
+    path(
+        'accounts/',
+        include('django.contrib.auth.urls')
+    )
 )
 # urlpatterns = [
 #     path('', TemplateView.as_view(template_name="index.html")),
 #     path('admin/', admin.site.urls),
 #     path('ideas/<int:idea_id>/', idea_detail_view, name='idea-detail')
 # ]
+
+urlpatterns += static(
+    settings.STATIC_URL,
+    document_root=settings.STATIC_ROOT
+)
+urlpatterns += static("/media/", document_root=settings.MEDIA_ROOT)

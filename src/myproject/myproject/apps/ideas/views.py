@@ -65,16 +65,17 @@ def create_or_update_idea_view(request, pk=None):
 
     if request.method == 'POST':
         form = IdeaWithTranslatedFieldsForm(
+            request,
             data=request.POST,
             files=request.FILES,
             instance=idea
         )
         if form.is_valid():
             idea = form.save()
-            return redirect('ideas:ideas_detail', pk=idea.pk)
+            return redirect('ideas:idea_detail', pk=idea.pk)
 
     else:
-        form = IdeaWithTranslatedFieldsForm(instance=idea)
+        form = IdeaWithTranslatedFieldsForm(request, instance=idea)
     template_name = 'ideas/idea_form.html'
     context = {
         'title': 'Create or Update Idea',

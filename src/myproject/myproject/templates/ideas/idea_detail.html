@@ -11,6 +11,9 @@
         "{{ object.translated_title }}"
     </h2>
     <p>{{ object.translated_content }}</p>
+    {% if object.categories %}
+        <p>Categories: {{ object.categories.all }}</p>
+    {% endif %}
 {% else %}
     <h2>
         "{{ object.title }}"
@@ -23,8 +26,8 @@
         <p>Category: {{ object.category.title }}</p>
         <p>Ideas without this category: {{ object.category.get_ideas_without_this_category }}</p>
     {% endif %}
-    {% if object.author %}
-        <p>Author: {{ object.author.username }}</p>
-    {% endif %}
+{% endif %}
+{% if object.author %}
+    <p>Author: {{ object.author.username }}</p>
 {% endif %}
 {% endblock %}

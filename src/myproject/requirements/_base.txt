@@ -1,6 +1,8 @@
 Django~=3.0.4
 djangorestframework
+django-imagekit==4.0.2
 gunicorn==20.0.4
+Pillow==9.3.0
 psycopg2-binary==2.8.6
 python-dotenv
 social-auth-app-django

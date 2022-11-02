@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # third-party apps
-    # ...
+    'imagekit',
     # local apps
     'myproject.apps.core.apps.CoreAppConfig',  # Apps with mixins first!
     'myproject.apps.categories.apps.CategoriesConfig',
@@ -176,6 +176,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'myproject', 'site_static')
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # News Article Themes - rewrite app_settings

@@ -30,4 +30,14 @@
 {% if object.author %}
     <p>Author: {{ object.author.username }}</p>
 {% endif %}
+{% if object.picture %}
+    <h3>Original picture</h3>
+    <img src="{{ idea.picture.url }}" alt="" style="margin-bottom:50px"/>
+    <h3>Picture_large is used for the detail view</h3>
+    <img src="{{ idea.picture_large.url }}" alt="" style="margin-bottom:50px"/>
+    <h3>Picture_thumbnail is used for the detail view</h3>
+    <img src="{{ idea.picture_thumbnail.url }}" alt="" style="margin-bottom:50px"/>
+    <h3>Picture_social is used for the detail view</h3>
+    <img src="{{ idea.picture_social.url }}" alt="" style="margin-bottom:50px"/>
+{% endif %}
 {% endblock %}

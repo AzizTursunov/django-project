@@ -1,10 +1,16 @@
+import contextlib
+import os
 import uuid
+
+from imagekit.models import ImageSpecField
+from pilkit.processors import ResizeToFill
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now as timezone_now
 
 from myproject.apps.core.models import (
     CreationModificationDateBase,
@@ -37,6 +43,13 @@ OwnerBase = generic_relation(
         'model': 'user'
     }
 )
+
+
+def upload_to(instance, filename):
+    now = timezone_now()
+    base, extension = os.path.splitext(filename)
+    extension = extension.lower()
+    return f'ideas/{now:%Y/%m}/{instance.pk}{extension}'
 
 
 class Like(FavoriteObjectBase, OwnerBase):
@@ -177,6 +190,29 @@ class IdeaWithTranslatedFields(models.Model):
     translated_title = TranslatedField('title')
     translated_content = TranslatedField('content')
 
+    picture = models.ImageField(
+        _('Picture'),
+        upload_to=upload_to,
+        blank=True,
+        null=True
+    )
+    picture_social = ImageSpecField(
+        source='picture',
+        processors=[ResizeToFill(1024, 512)],
+        format='JPEG',
+        options={'quality': 100}
+    )
+    picture_large = ImageSpecField(
+        source='picture',
+        processors=[ResizeToFill(800, 400)],
+        format='PNG'
+    )
+    picture_thumbnail = ImageSpecField(
+        source='picture',
+        processors=[ResizeToFill(728, 250)],
+        format='PNG'
+    )
+
     class Meta:
         verbose_name = _('Idea With Translations')
         verbose_name_plural = _('Ideas With Translations')
@@ -227,6 +263,22 @@ class IdeaWithTranslatedFields(models.Model):
 
     def get_url_path(self):
         return reverse('ideas:idea_detail', kwargs={'pk': self.pk})
+
+    def delete(self, *args, **kwargs):
+        from django.core.files.storage import default_storage
+        if self.picture:
+            with contextlib.suppress(FileNotFoundError):
+                default_storage.delete(
+                    self.picture_social.path
+                )
+                default_storage.delete(
+                    self.picture_large.path
+                )
+                default_storage.delete(
+                    self.picture_thumbnail.path
+                )
+            self.picture.delete()
+        super().delete(*args, **kwargs)
 
 
 class IdeaTranslations(models.Model):

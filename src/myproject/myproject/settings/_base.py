@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     # third-party apps
+    'crispy_forms',
     'imagekit',
     # local apps
     'myproject.apps.core.apps.CoreAppConfig',  # Apps with mixins first!
@@ -95,6 +96,7 @@ TEMPLATES = [
 ]
 
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 

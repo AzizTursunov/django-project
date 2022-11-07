@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms import bootstrap, helper, layout
 
 from myproject.apps.categories.models import Category
-from .models import IdeaWithTranslatedFields
+from .models import IdeaTranslations, IdeaWithTranslatedFields
 
 
 class IdeaWithTranslatedFieldsForm(forms.ModelForm):
@@ -67,6 +67,9 @@ class IdeaWithTranslatedFieldsForm(forms.ModelForm):
             categories_field,
             css_id='categories_fieldset'
         )
+        inline_translations = layout.HTML(
+            '''{% include "ideas/forms/translations.html" %}'''
+        )
         submit_button = layout.Submit(
             'save',
             _('Save')
@@ -77,6 +80,7 @@ class IdeaWithTranslatedFieldsForm(forms.ModelForm):
         self.helper.form_method = 'POST'
         self.helper.layout = layout.Layout(
             main_fieldset,
+            inline_translations,
             picture_fieldset,
             categories_fieldset,
             actions
@@ -89,3 +93,47 @@ class IdeaWithTranslatedFieldsForm(forms.ModelForm):
             instance.save()
             self.save_m2m()
         return instance
+
+
+class IdeaTranslationsForm(forms.ModelForm):
+    language = forms.ChoiceField(
+        label=_('Language'),
+        choices=settings.LANGUAGES_EXCEPT_THE_DEFAULT,
+        required=True,
+    )
+
+    class Meta:
+        model = IdeaTranslations
+        exclude = ['idea']
+
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        super().__init__(*args, **kwargs)
+
+        id_field = layout.Field('id')
+        language_field = layout.Field(
+            'language',
+            css_class='input_block-level'
+        )
+        title_field = layout.Field(
+            'title',
+            css_class='input_block-level'
+        )
+        content_field = layout.Field(
+            'content',
+            css_class='input_block-level',
+            rows='3'
+        )
+        delete_field = layout.Field('DELETE')
+        main_fieldset = layout.Fieldset(
+            _('Main data'),
+            id_field,
+            language_field,
+            title_field,
+            content_field,
+            delete_field
+        )
+        self.helper = helper.FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = layout.Layout(main_fieldset)

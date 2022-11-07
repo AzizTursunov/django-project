@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.forms import modelformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView
 
-from .forms import IdeaWithTranslatedFieldsForm
-from .models import Idea, IdeaWithTranslatedFields
+from .forms import IdeaTranslationsForm, IdeaWithTranslatedFieldsForm
+from .models import Idea, IdeaTranslations, IdeaWithTranslatedFields
 
 
 def idea_detail_view(request, idea_id=None):
@@ -62,6 +63,11 @@ def create_or_update_idea_view(request, pk=None):
     idea = None
     if pk:
         idea = get_object_or_404(IdeaWithTranslatedFields, pk=pk)
+    IdeaTranslationsFormSet = modelformset_factory(
+        IdeaTranslations,
+        form=IdeaTranslationsForm,
+        extra=0, can_delete=True
+    )
 
     if request.method == 'POST':
         form = IdeaWithTranslatedFieldsForm(
@@ -70,17 +76,38 @@ def create_or_update_idea_view(request, pk=None):
             files=request.FILES,
             instance=idea
         )
-        if form.is_valid():
+        translations_formset = IdeaTranslationsFormSet(
+            queryset=IdeaTranslations.objects.filter(idea=idea),
+            data=request.POST or None,
+            files=request.FILES or None,
+            prefix='translations',
+            form_kwargs={'request': request}
+        )
+        if form.is_valid() and translations_formset.is_valid():
             idea = form.save()
+            translations = translations_formset.save(
+                commit=False
+            )
+            for translation in translations:
+                translation.idea = idea
+                translation.save()
+            translations_formset.save_m2m()
+            for translation in translations_formset.deleted_objects:
+                translation.delete()
             return redirect('ideas:idea_detail', pk=idea.pk)
-
     else:
         form = IdeaWithTranslatedFieldsForm(request, instance=idea)
+        translations_formset = IdeaTranslationsFormSet(
+            queryset=IdeaTranslations.objects.filter(idea=idea),
+            prefix='translations',
+            form_kwargs={'request': request}
+        )
     template_name = 'ideas/idea_form.html'
     context = {
         'title': 'Create or Update Idea',
         'form': form,
-        'idea': idea
+        'idea': idea,
+        'translations_formset': translations_formset
     }
 
     return render(request, template_name, context)

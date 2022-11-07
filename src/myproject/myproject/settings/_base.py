@@ -158,6 +158,9 @@ LANGUAGES = [
     ('en', 'English'), ('ru', 'Russian'),
     ('fr', 'French'), ('de', 'German')
 ]
+LANGUAGES_EXCEPT_THE_DEFAULT = [
+    ('ru', 'Russian'), ('fr', 'French'), ('de', 'German')
+]
 
 TIME_ZONE = 'UTC'
 

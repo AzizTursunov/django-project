@@ -179,10 +179,10 @@ class IdeaWithTranslatedFields(models.Model):
         'categories.Category',
         verbose_name=_('Categories'),
         blank=True,
-        related_name='ideas'
+        related_name='category_ideas'
     )
-    raiting = models.PositiveSmallIntegerField(
-        _('Raiting'),
+    rating = models.PositiveSmallIntegerField(
+        _('Rating'),
         choices=RATING_CHOICES,
         blank=True,
         null=True

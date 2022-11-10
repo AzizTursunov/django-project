@@ -4,15 +4,21 @@ from .views import (
     IdeaWithTranslatedFieldsDetailView,
     IdeaWithTranslatedFieldsListView,
     create_or_update_idea_view,
-    delete_idea_view
+    delete_idea_view,
+    idea_with_translated_fields_list_view
 )
 
 app_name = 'ideas'
 
 urlpatterns = [
+    # path(
+    #     '',
+    #     IdeaWithTranslatedFieldsListView.as_view(),
+    #     name='idea_list'
+    # ),
     path(
         '',
-        IdeaWithTranslatedFieldsListView.as_view(),
+        idea_with_translated_fields_list_view,
         name='idea_list'
     ),
     path(

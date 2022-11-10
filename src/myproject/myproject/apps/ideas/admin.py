@@ -84,7 +84,7 @@ class IdeaWithTranslatedFieldsAdmin(admin.ModelAdmin):
             {'fields': ['title', 'content', 'picture']}
         ),
         (
-            _('Raitings'),
-            {'fields': ['raiting']}
+            _('Ratings'),
+            {'fields': ['rating']}
         )
     ]

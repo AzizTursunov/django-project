@@ -4,8 +4,19 @@ from django.forms import modelformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView
 
-from .forms import IdeaTranslationsForm, IdeaWithTranslatedFieldsForm
-from .models import Idea, IdeaTranslations, IdeaWithTranslatedFields
+from .forms import (
+    IdeaFilterForm,
+    IdeaTranslationsForm,
+    IdeaWithTranslatedFieldsForm
+)
+from .models import (
+    Idea,
+    IdeaTranslations,
+    IdeaWithTranslatedFields,
+    RATING_CHOICES
+)
+
+PAGE_SIZE = getattr(settings, 'PAGE_SIZE', 24)
 
 
 def idea_detail_view(request, idea_id=None):
@@ -41,7 +52,7 @@ def idea_vs_translated_fields_view(request, idea_id=None):
 
 class IdeaWithTranslatedFieldsListView(ListView):
     model = IdeaWithTranslatedFields
-    template_name = 'ideas/ideas_list.html'
+    template_name = 'ideas/idea_list.html'
 
 
 class IdeaWithTranslatedFieldsDetailView(DetailView):
@@ -128,3 +139,46 @@ def delete_idea_view(request, pk):
         'ideas/idea_deleting_confirmation.html',
         context
     )
+
+
+def idea_with_translated_fields_list_view(request):
+    qs = IdeaWithTranslatedFields.objects.order_by('title')
+    form = IdeaFilterForm(data=request.GET)
+
+    facets = {
+        'selected': {},
+        'categories': {
+            'authors': form.fields['author'].queryset,
+            'categories': form.fields['category'].queryset,
+            'ratings': RATING_CHOICES
+        }
+    }
+
+    if form.is_valid():
+        filters = (
+            ('author', 'author'),
+            ('category', 'categories'),
+            ('rating', 'rating')
+        )
+        qs = filter_facets(facets, qs, form, filters)
+
+    context = {
+        'form': form,
+        'facets': facets,
+        'object_list': qs
+    }
+    return render(request, 'ideas/idea_list.html', context)
+
+
+def filter_facets(facets, qs, form, filters):
+    for query_param, filter_param in filters:
+        value = form.cleaned_data[query_param]
+        if value:
+            selected_value = value
+            if query_param == 'rating':
+                rating = int(value)
+                selected_value = (rating, dict(RATING_CHOICES)[rating])
+            facets['selected'][query_param] = selected_value
+            filter_args = {filter_param: value}
+            qs = qs.filter(**filter_args).distinct()
+    return qs

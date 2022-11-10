@@ -1,12 +1,19 @@
 from django import forms
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from crispy_forms import bootstrap, helper, layout
 
 from myproject.apps.categories.models import Category
-from .models import IdeaTranslations, IdeaWithTranslatedFields
+from .models import (
+    IdeaTranslations,
+    IdeaWithTranslatedFields,
+    RATING_CHOICES
+)
+
+User = get_user_model()
 
 
 class IdeaWithTranslatedFieldsForm(forms.ModelForm):
@@ -137,3 +144,25 @@ class IdeaTranslationsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.layout = layout.Layout(main_fieldset)
+
+
+class IdeaFilterForm(forms.Form):
+    author = forms.ModelChoiceField(
+        label=_('Author'),
+        required=False,
+        queryset=User.objects.annotate(
+            idea_count=models.Count('authored_ideas')
+        ).filter(idea_count__gt=0)
+    )
+    category = forms.ModelChoiceField(
+        label=_('Category'),
+        required=False,
+        queryset=Category.objects.annotate(
+            idea_count=models.Count('category_ideas')
+        ).filter(idea_count__gt=0)
+    )
+    rating = forms.ChoiceField(
+        label=_('Rating'),
+        required=False,
+        choices=RATING_CHOICES
+    )

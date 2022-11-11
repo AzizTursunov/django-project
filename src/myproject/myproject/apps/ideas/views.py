@@ -1,5 +1,10 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import (
+    EmptyPage,
+    PageNotAnInteger,
+    Paginator
+)
 from django.forms import modelformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView
@@ -162,10 +167,21 @@ def idea_with_translated_fields_list_view(request):
         )
         qs = filter_facets(facets, qs, form, filters)
 
+    paginator = Paginator(qs, PAGE_SIZE)
+    page_number = request.GET.get('page')
+    try:
+        page = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, show first page
+        page = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, show last existing page
+        page = paginator.page(paginator.num_pages)
+
     context = {
         'form': form,
         'facets': facets,
-        'object_list': qs
+        'object_list': page
     }
     return render(request, 'ideas/idea_list.html', context)
 

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    IdeaListView,
     IdeaWithTranslatedFieldsDetailView,
     IdeaWithTranslatedFieldsListView,
     create_or_update_idea_view,
@@ -16,9 +17,14 @@ urlpatterns = [
     #     IdeaWithTranslatedFieldsListView.as_view(),
     #     name='idea_list'
     # ),
+    # path(
+    #     '',
+    #     idea_with_translated_fields_list_view,
+    #     name='idea_list'
+    # ),
     path(
         '',
-        idea_with_translated_fields_list_view,
+        IdeaListView.as_view(),
         name='idea_list'
     ),
     path(

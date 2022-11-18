@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     # third-party apps
     'crispy_forms',
     'imagekit',
+    'django_json_ld',
     # local apps
     'myproject.apps.core.apps.CoreAppConfig',  # Apps with mixins first!
     'myproject.apps.categories.apps.CategoriesConfig',

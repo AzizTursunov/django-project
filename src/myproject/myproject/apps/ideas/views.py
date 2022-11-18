@@ -217,7 +217,7 @@ class IdeaListView(View):
 
     def get_queryset_and_facets(self, form):
         qs = IdeaWithTranslatedFields.objects.order_by(
-            'title'
+            '-created'
         )
         facets = {
             'selected': {},

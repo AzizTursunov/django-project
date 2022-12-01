@@ -58,11 +58,13 @@ INSTALLED_APPS = [
     'crispy_forms',
     'imagekit',
     'django_json_ld',
+    'haystack',
     # local apps
     'myproject.apps.core.apps.CoreAppConfig',  # Apps with mixins first!
     'myproject.apps.categories.apps.CategoriesConfig',
     'myproject.apps.ideas.apps.IdeasAppConfig',
     'myproject.apps.magazine.apps.MagazineAppConfig',
+    'myproject.apps.search.apps.SearchAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -99,8 +101,8 @@ TEMPLATES = [
     },
 ]
 
-FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
@@ -165,6 +167,21 @@ LANGUAGES = [
 LANGUAGES_EXCEPT_THE_DEFAULT = [
     ('ru', 'Russian'), ('fr', 'French'), ('de', 'German')
 ]
+
+HAYSTACK_CONNECTIONS = {}
+for lang_code, lang_name in LANGUAGES:
+    lang_code_underscored = lang_code.replace('-', '_')
+    HAYSTACK_CONNECTIONS[f'default_{lang_code_underscored}'] = {
+        'ENGINE': 'myproject.apps.search.multilingual_whoosh_backend.MultilingualWhooshEngine',
+        'PATH': os.path.join(
+            BASE_DIR, 'tmp',
+            f'whoosh_index_{lang_code_underscored}'
+        ),
+    }
+    lang_code_underscored = LANGUAGE_CODE.replace('-', '_')
+    HAYSTACK_CONNECTIONS['default'] = HAYSTACK_CONNECTIONS[
+        f'default_{lang_code_underscored}'
+    ]
 
 TIME_ZONE = 'UTC'
 

@@ -25,6 +25,10 @@ from myproject.apps.ideas.views import idea_detail_view
 urlpatterns = i18n_patterns(
     path('', TemplateView.as_view(template_name="index.html")),
     path('admin/', admin.site.urls),
+    path(
+        'accounts/',
+        include('django.contrib.auth.urls')
+    ),
     path('ideas/<int:idea_id>/', idea_detail_view, name='idea-detail'),
     path(
         'translated-ideas/',
@@ -33,16 +37,8 @@ urlpatterns = i18n_patterns(
             namespace='ideas'
         )
     ),
-    path(
-        'accounts/',
-        include('django.contrib.auth.urls')
-    )
+    path('search/', include('haystack.urls'))
 )
-# urlpatterns = [
-#     path('', TemplateView.as_view(template_name="index.html")),
-#     path('admin/', admin.site.urls),
-#     path('ideas/<int:idea_id>/', idea_detail_view, name='idea-detail')
-# ]
 
 urlpatterns += static(
     settings.STATIC_URL,

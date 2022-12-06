@@ -1,0 +1,44 @@
+<header>
+    {% load i18n static %}
+    <!-- Использованы классы бустрапа для создания типовой навигации с логотипом -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: lightskyblue">
+        <div class="container">
+        <a class="navbar-brand" href="{% url 'ideas:idea_list' %}">
+            <img src="{% static 'site/img/logo.ico' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+            <span style="color:red">Id</span>ea</a>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto nav-pills">
+            {% with request.resolver_match.view_name as view_name %}
+            <li class="nav-item mr-3">
+                <a class="nav-link {% if view_name  == 'about:author' %}active{% endif %}" href="">{% trans "About" %}</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item mr-3">
+                <a class="nav-link link-light" href="{% url 'ideas:create_idea' %}">{% trans "New idea" %}</a>
+            </li>
+            <li class="nav-item mr-3">
+                <a class="nav-link link-light {% if view_name  == 'users:password_change' %}active{% endif %}" href="">{% trans "Change password" %}</a>
+            </li>
+            <li class="nav-item mr-3">
+                <a class="nav-link link-light" href="">{% trans "Exit" %}</a>
+            </li>
+            <li>
+                {% trans "User" %}: {{ user.username }}
+            <li>
+            {% else %}
+            <li class="nav-item mr-3">
+                <a class="nav-link link-light {% if view_name  == 'users:login' %}active{% endif %}" href="">{% trans "Login" %}</a>
+            </li>
+            <li class="nav-item mr-3">
+                <a class="nav-link link-light {% if view_name  == 'users:signup' %}active{% endif %}" href="">{% trans "Registration" %}</a>
+            </li>
+            {% endif %}
+            {% endwith %}
+        </div>
+        </div>
+    </nav>
+</header>
